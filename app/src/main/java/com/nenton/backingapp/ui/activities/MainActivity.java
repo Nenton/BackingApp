@@ -12,7 +12,8 @@ import com.nenton.backingapp.R;
 import com.nenton.backingapp.data.network.RestService;
 import com.nenton.backingapp.data.network.ServiceGenerator;
 import com.nenton.backingapp.data.network.res.RecipeResponse;
-import com.nenton.backingapp.data.pojo.Recipe;
+import com.nenton.backingapp.data.storage.dto.RecipeDto;
+import com.nenton.backingapp.data.storage.dto.StepDto;
 import com.nenton.backingapp.ui.fragments.DetailsFragment;
 import com.nenton.backingapp.ui.fragments.DetailsFragment.OnDetailOrStepClickListener;
 import com.nenton.backingapp.ui.fragments.MasterRecipesFragment;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
     private static final String TAG = MainActivity.class.getName();
 
     private RestService service;
-    private List<Recipe> mRecipes;
+    private List<RecipeDto> mRecipes;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     private MasterRecipesFragment recipesFragment;
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
     private void updateFragment(List<RecipeResponse> body) {
         mRecipes = new ArrayList<>();
         for (RecipeResponse recipeResponse : body) {
-            mRecipes.add(new Recipe(recipeResponse));
+            mRecipes.add(new RecipeDto(recipeResponse));
         }
 
         if (recipesFragment != null) {
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
     @Override
     public void onRecipeSelected(int position) {
         updateBackArrow(true);
-        Recipe recipe = mRecipes.get(position);
+        RecipeDto recipe = mRecipes.get(position);
         mDetailsFragment = new DetailsFragment();
         mDetailsFragment.setDetailsAndSteps(recipe.getSteps(), recipe.getServings(), position);
         manager.beginTransaction().replace(R.id.head_container, mDetailsFragment).commit();
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
     public void onDetailOrStepSelected(int positionRecipe, int positionDetail) {
         updateBackArrow(true);
         if (positionDetail != 0) {
-            Recipe.Step step = mRecipes.get(positionRecipe).getSteps().get(positionDetail - 1);
+            StepDto step = mRecipes.get(positionRecipe).getSteps().get(positionDetail - 1);
             mStepFragment = new StepFragment();
             mStepFragment.setStep(step);
             if (findViewById(R.id.second_container) == null) {

@@ -7,32 +7,25 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.nenton.backingapp.R;
-import com.nenton.backingapp.data.pojo.Recipe;
-import com.nenton.backingapp.ui.activities.MainActivity;
+import com.nenton.backingapp.data.storage.dto.StepDto;
 
 public class StepFragment extends Fragment {
-    private Recipe.Step mStep;
+    private StepDto mStep;
     private SimpleExoPlayer mExoPlayer;
     private Dialog mFullScreenDialog;
     private SimpleExoPlayerView mExoPlayerView;
@@ -51,7 +44,7 @@ public class StepFragment extends Fragment {
         }
     }
 
-    public void setStep(Recipe.Step step) {
+    public void setStep(StepDto step) {
         this.mStep = step;
     }
 

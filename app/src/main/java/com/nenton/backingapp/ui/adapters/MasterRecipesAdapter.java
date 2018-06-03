@@ -8,24 +8,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nenton.backingapp.R;
-import com.nenton.backingapp.data.pojo.Recipe;
+import com.nenton.backingapp.data.storage.dto.RecipeDto;
 import com.nenton.backingapp.ui.fragments.MasterRecipesFragment.OnRecipeClickListener;
 
-import java.util.Collections;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class MasterRecipesAdapter extends RecyclerView.Adapter<MasterRecipesAdapter.ViewHolder> {
 
-    private List<Recipe> recipes;
+    private List<RecipeDto> recipes;
     private OnRecipeClickListener mListener;
 
     public MasterRecipesAdapter() {
     }
 
-    public void swapAdapter(List<Recipe> recipes) {
+    public void swapAdapter(List<RecipeDto> recipes) {
         this.recipes = recipes;
         notifyDataSetChanged();
     }

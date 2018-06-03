@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nenton.backingapp.R;
-import com.nenton.backingapp.data.pojo.Recipe;
+import com.nenton.backingapp.data.storage.dto.StepDto;
 import com.nenton.backingapp.ui.adapters.DetailsAdapter;
 
 import java.util.ArrayList;
@@ -31,11 +31,11 @@ public class DetailsFragment extends Fragment {
         void onDetailOrStepSelected(int positionRecipe, int positionDetail);
     }
 
-    public void setDetailsAndSteps(List<Recipe.Step> steps, int servings, int positionRecipe) {
+    public void setDetailsAndSteps(List<StepDto> steps, int servings, int positionRecipe) {
         List<String> details = new ArrayList<>();
         details.add("Ingredients on " + servings + " portions");
         int i = 1;
-        for (Recipe.Step step : steps) {
+        for (StepDto step : steps) {
             details.add("Step " + i + ": " + step.getShortDescription());
             i++;
         }

@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nenton.backingapp.R;
-import com.nenton.backingapp.data.pojo.Recipe;
+import com.nenton.backingapp.data.storage.dto.RecipeDto;
 import com.nenton.backingapp.ui.adapters.MasterRecipesAdapter;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class MasterRecipesFragment extends Fragment {
         mAdapter = new MasterRecipesAdapter();
     }
 
-    public void setRecipes(List<Recipe> recipes) {
+    public void setRecipes(List<RecipeDto> recipes) {
         mAdapter.swapAdapter(recipes);
     }
 
