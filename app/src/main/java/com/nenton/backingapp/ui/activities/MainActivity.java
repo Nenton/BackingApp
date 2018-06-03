@@ -4,11 +4,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.nenton.backingapp.R;
 import com.nenton.backingapp.data.managers.RealmManager;
 import com.nenton.backingapp.data.network.RestService;
@@ -22,6 +27,8 @@ import com.nenton.backingapp.ui.fragments.IngredientsFragment;
 import com.nenton.backingapp.ui.fragments.MasterRecipesFragment;
 import com.nenton.backingapp.ui.fragments.MasterRecipesFragment.OnRecipeClickListener;
 import com.nenton.backingapp.ui.fragments.StepFragment;
+import com.nenton.backingapp.utils.ExoEventListener;
+import com.nenton.backingapp.utils.Playable;
 
 import java.util.List;
 
@@ -32,7 +39,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements OnRecipeClickListener, OnDetailOrStepClickListener {
+public class MainActivity extends AppCompatActivity implements OnRecipeClickListener, OnDetailOrStepClickListener, Playable {
     private static final String TAG = MainActivity.class.getName();
 
     private static final String STATE_FRAGMENT_KEY = "STATE_FRAGMENT_KEY";
@@ -45,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
     private int mRecipeId;
     private int mStepId;
     private int mStateFragment;
+    private static MediaSessionCompat mMediaSession;
+    private SimpleExoPlayer mExoPlayer;
 
     private RestService service;
     private RealmResults<RecipeRealm> mRecipes;
@@ -52,17 +61,10 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     private FragmentManager manager;
+    private PlaybackStateCompat.Builder mStateBuilder;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        manager = getSupportFragmentManager();
-        mRealmManager = new RealmManager();
-        mRealmManager.getRecipes(recipeRealms -> mRecipes = recipeRealms);
-        initToolbar();
-        initCurrentFragment(savedInstanceState);
+    public static MediaSessionCompat getMediaSession() {
+        return mMediaSession;
     }
 
     private void initCurrentFragment(Bundle state) {
@@ -130,13 +132,45 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
         setSupportActionBar(toolbar);
     }
 
-
     @Override
-    protected void onStop() {
-        if (mRecipes != null) {
-            mRecipes.removeAllChangeListeners();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        manager = getSupportFragmentManager();
+        mRealmManager = new RealmManager();
+        mRealmManager.getRecipes(recipeRealms -> mRecipes = recipeRealms);
+        initToolbar();
+        initCurrentFragment(savedInstanceState);
+        initializeMediaSession();
+    }
+
+    private void initPlayer() {
+        if (mExoPlayer == null) {
+            mExoPlayer = ExoPlayerFactory.newSimpleInstance(this, new DefaultTrackSelector());
+            mExoPlayer.addListener(new ExoEventListener(mStateBuilder, mExoPlayer));
         }
-        super.onStop();
+    }
+
+    private void initializeMediaSession() {
+        mMediaSession = new MediaSessionCompat(this, TAG);
+        mMediaSession.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+
+        mMediaSession.setMediaButtonReceiver(null);
+        mStateBuilder = new PlaybackStateCompat.Builder()
+                .setActions(
+                        PlaybackStateCompat.ACTION_PLAY |
+                                PlaybackStateCompat.ACTION_PAUSE |
+                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
+
+        mMediaSession.setPlaybackState(mStateBuilder.build());
+        mMediaSession.setCallback(new MySessionCallback());
+        mMediaSession.setActive(true);
+
+        initPlayer();
     }
 
     private void executeNetQuery() {
@@ -250,6 +284,57 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
             if (show) {
                 toolbar.setNavigationOnClickListener(view -> onBackPressed());
             }
+        }
+    }
+
+    @Override
+    public SimpleExoPlayer getPlayer() {
+        return mExoPlayer;
+    }
+
+    // region lifeCycle
+    @Override
+    protected void onStop() {
+        if (mRecipes != null) {
+            mRecipes.removeAllChangeListeners();
+        }
+        mExoPlayer.setPlayWhenReady(false);
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        mExoPlayer.setPlayWhenReady(false);
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        releasePlayer();
+        mMediaSession.setActive(false);
+        super.onDestroy();
+    }
+
+    private void releasePlayer() {
+        mExoPlayer.stop();
+        mExoPlayer.release();
+        mExoPlayer = null;
+    }
+
+    private class MySessionCallback extends MediaSessionCompat.Callback {
+        @Override
+        public void onPlay() {
+            mExoPlayer.setPlayWhenReady(true);
+        }
+
+        @Override
+        public void onPause() {
+            mExoPlayer.setPlayWhenReady(false);
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            mExoPlayer.seekTo(0);
         }
     }
 }
