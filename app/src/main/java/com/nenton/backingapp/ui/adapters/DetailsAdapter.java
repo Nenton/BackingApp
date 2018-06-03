@@ -8,21 +8,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nenton.backingapp.R;
+import com.nenton.backingapp.data.storage.dto.DetailDto;
 import com.nenton.backingapp.ui.fragments.DetailsFragment.OnDetailOrStepClickListener;
 
 import java.util.List;
 
 public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHolder> {
     private OnDetailOrStepClickListener mListener;
-    private List<String> mDetails;
-    private int mPosRecipe;
+    private List<DetailDto> mDetails;
 
     public DetailsAdapter() {
     }
 
-    public void swapAdapter(List<String> details, int posRecipe) {
+    public void swapAdapter(List<DetailDto> details) {
         this.mDetails = details;
-        this.mPosRecipe = posRecipe;
         notifyDataSetChanged();
     }
 
@@ -33,7 +32,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recipe,
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_detail,
                 parent,
                 false);
         return new ViewHolder(view);
@@ -41,13 +40,10 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.onDetailOrStepSelected(mPosRecipe, holder.getAdapterPosition());
-            }
-        });
-        holder.mTextView.setText(mDetails.get(position));
+        holder.itemView.setOnClickListener(view -> mListener.onDetailOrStepSelected(
+                mDetails.get(holder.getAdapterPosition()).getType(),
+                mDetails.get(holder.getAdapterPosition()).getId()));
+        holder.mTextView.setText(mDetails.get(position).getText());
     }
 
     @Override
@@ -63,7 +59,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
 
         ViewHolder(View itemView) {
             super(itemView);
-            mTextView = itemView.findViewById(R.id.recipe_tv);
+            mTextView = itemView.findViewById(R.id.detail_tv);
         }
     }
 }

@@ -22,13 +22,14 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.nenton.backingapp.R;
-import com.nenton.backingapp.data.storage.dto.StepDto;
+import com.nenton.backingapp.data.storage.realm.StepRealm;
 
 public class StepFragment extends Fragment {
-    private StepDto mStep;
+    private StepRealm mStep;
     private SimpleExoPlayer mExoPlayer;
     private Dialog mFullScreenDialog;
     private SimpleExoPlayerView mExoPlayerView;
+    private TextView description;
 
     public StepFragment() {
 
@@ -38,37 +39,46 @@ public class StepFragment extends Fragment {
         if (mExoPlayer == null) {
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(),
                     new DefaultTrackSelector());
-
 //            mExoPlayer.addListener(); // TODO: 02.06.2018 Listener
-
         }
     }
 
-    public void setStep(StepDto step) {
+    public void setStep(StepRealm step) {
         this.mStep = step;
+        updateView();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         initPlayer();
+        updateView();
+    }
+
+    private void updateView() {
+        if (mStep != null && !mStep.getVideoURL().isEmpty() && getContext() != null) {
+            String backingApp = Util.getUserAgent(getContext(), "BackingApp");
+            DefaultDataSourceFactory factory = new DefaultDataSourceFactory(getContext(), backingApp, new DefaultBandwidthMeter());
+            MediaSource mediaSource = new ExtractorMediaSource.Factory(factory).createMediaSource(Uri.parse(mStep.getVideoURL()));
+            mExoPlayer.prepare(mediaSource);
+        }
+        if (description != null && mStep != null) {
+            description.setText(mStep.getDescription());
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_step, container, false);
-        TextView description = view.findViewById(R.id.desc_step_tv);
-        if (description != null) {
+        description = view.findViewById(R.id.desc_step_tv);
+        if (description != null && mStep != null) {
             description.setText(mStep.getDescription());
         }
 
         mExoPlayerView = view.findViewById(R.id.player_exo);
         mExoPlayerView.setPlayer(mExoPlayer);
-        String backingApp = Util.getUserAgent(getContext(), "BackingApp");
-        DefaultDataSourceFactory factory = new DefaultDataSourceFactory(getContext(), backingApp, new DefaultBandwidthMeter());
-        MediaSource mediaSource = new ExtractorMediaSource.Factory(factory).createMediaSource(Uri.parse(mStep.getVideoURL()));
-        mExoPlayer.prepare(mediaSource);
+        updateView();
         return view;
         // TODO: 02.06.2018 FullScreen
     }

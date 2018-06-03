@@ -8,20 +8,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nenton.backingapp.R;
-import com.nenton.backingapp.data.storage.dto.RecipeDto;
+import com.nenton.backingapp.data.storage.realm.RecipeRealm;
 import com.nenton.backingapp.ui.fragments.MasterRecipesFragment.OnRecipeClickListener;
 
 import java.util.List;
 
 public class MasterRecipesAdapter extends RecyclerView.Adapter<MasterRecipesAdapter.ViewHolder> {
 
-    private List<RecipeDto> recipes;
+    private List<RecipeRealm> recipes;
     private OnRecipeClickListener mListener;
 
     public MasterRecipesAdapter() {
     }
 
-    public void swapAdapter(List<RecipeDto> recipes) {
+    public void swapAdapter(List<RecipeRealm> recipes) {
         this.recipes = recipes;
         notifyDataSetChanged();
     }
@@ -43,7 +43,7 @@ public class MasterRecipesAdapter extends RecyclerView.Adapter<MasterRecipesAdap
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.onRecipeSelected(holder.getAdapterPosition());
+                mListener.onRecipeSelected(recipes.get(holder.getAdapterPosition()).getId());
             }
         });
     }

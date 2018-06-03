@@ -1,9 +1,6 @@
 package com.nenton.backingapp.data.storage.realm;
 
 import com.nenton.backingapp.data.network.res.RecipeResponse;
-import com.nenton.backingapp.data.storage.dto.IngredientDto;
-import com.nenton.backingapp.data.storage.dto.RecipeDto;
-import com.nenton.backingapp.data.storage.dto.StepDto;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -31,21 +28,6 @@ public class RecipeRealm extends RealmObject {
 
         steps = new RealmList<>();
         for (RecipeResponse.Step step : recipe.getSteps()) {
-            steps.add(new StepRealm(step));
-        }
-        this.servings = recipe.getServings();
-        this.image = recipe.getImage();
-    }
-
-    public RecipeRealm(RecipeDto recipe) {
-        this.id = recipe.getId();
-        this.name = recipe.getName();
-        ingredients = new RealmList<>();
-        for (IngredientDto ingredient : recipe.getIngredients()) {
-            ingredients.add(new IngredientRealm(ingredient));
-        }
-        steps = new RealmList<>();
-        for (StepDto step : recipe.getSteps()) {
             steps.add(new StepRealm(step));
         }
         this.servings = recipe.getServings();
