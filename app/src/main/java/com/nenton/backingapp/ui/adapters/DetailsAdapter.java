@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nenton.backingapp.R;
@@ -44,6 +45,9 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
                 mDetails.get(holder.getAdapterPosition()).getType(),
                 mDetails.get(holder.getAdapterPosition()).getId()));
         holder.mTextView.setText(mDetails.get(position).getText());
+        if (mDetails.get(position).isVideo()){
+            holder.mImageView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -56,10 +60,12 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView mTextView;
+        private ImageView mImageView;
 
         ViewHolder(View itemView) {
             super(itemView);
             mTextView = itemView.findViewById(R.id.detail_tv);
+            mImageView = itemView.findViewById(R.id.video_detail_iv);
         }
     }
 }

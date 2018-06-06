@@ -2,6 +2,7 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_detail_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="16dp"
@@ -11,13 +12,39 @@
     app:cardCornerRadius="8dp"
     app:cardElevation="8dp">
 
-    <TextView
-        android:id="@+id/detail_tv"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxLines="5"
-        android:minLines="1"
-        android:padding="16dp"
-        android:textSize="16sp"
-        tools:text="ПРобная" />
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/detail_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="center_vertical"
+            android:layout_toLeftOf="@+id/video_detail_iv"
+            android:layout_toStartOf="@+id/video_detail_iv"
+            android:maxLines="5"
+            android:minLines="1"
+            android:padding="16dp"
+            android:textSize="16sp"
+            tools:text="ПРобная" />
+
+        <ImageView
+            android:id="@+id/video_detail_iv"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_personal_video_black_24dp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </RelativeLayout>
+
 </android.support.v7.widget.CardView>

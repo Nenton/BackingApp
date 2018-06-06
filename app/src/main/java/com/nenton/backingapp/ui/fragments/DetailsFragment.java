@@ -45,7 +45,8 @@ public class DetailsFragment extends Fragment {
             DetailDto.Builder builder = new DetailDto.Builder();
             builder.setId(step.getId())
                     .setText("Step " + i + ": " + step.getShortDescription())
-                    .setType(DetailType.STEP);
+                    .setType(DetailType.STEP)
+                    .setIsVideo(step.getVideoURL() != null && !step.getVideoURL().isEmpty());
             details.add(builder.build());
             i++;
         }

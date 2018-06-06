@@ -59,6 +59,7 @@ public class StepFragment extends Fragment {
 
     public void setStep(StepRealm step) {
         this.mStep = step;
+        updateView();
     }
 
     @Override
@@ -88,12 +89,16 @@ public class StepFragment extends Fragment {
     }
 
     private void updateView() {
-        if (mStep != null && getContext() != null) {
+        if (mStep != null && getContext() != null && mStep.getVideoURL() != null && !mStep.getVideoURL().isEmpty()) {
             String backingApp = Util.getUserAgent(getContext(), "BackingApp");
             DefaultDataSourceFactory factory = new DefaultDataSourceFactory(getContext(), backingApp, new DefaultBandwidthMeter());
             MediaSource mediaSource = new ExtractorMediaSource.Factory(factory).createMediaSource(Uri.parse(mStep.getVideoURL()));
             mExoPlayer.seekTo(mPosition);
             mExoPlayer.prepare(mediaSource);
+        } else {
+            if (mExoPlayerView != null){
+                mExoPlayerView.setVisibility(View.GONE);
+            }
         }
         if (description != null && mStep != null) {
             description.setText(mStep.getDescription());
