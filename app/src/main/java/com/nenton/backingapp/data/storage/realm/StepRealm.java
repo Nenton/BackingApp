@@ -2,10 +2,12 @@ package com.nenton.backingapp.data.storage.realm;
 
 import com.nenton.backingapp.data.network.res.RecipeResponse.Step;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class StepRealm extends RealmObject {
+public class StepRealm extends RealmObject implements Serializable {
     @PrimaryKey
     private int id;
     private String shortDescription;

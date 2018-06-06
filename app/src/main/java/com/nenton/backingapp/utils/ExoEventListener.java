@@ -1,23 +1,27 @@
 package com.nenton.backingapp.utils;
 
+import android.content.Context;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.nenton.backingapp.ui.activities.MainActivity;
 
-public class ExoEventListener implements ExoPlayer.EventListener {
+public class ExoEventListener extends Player.DefaultEventListener {
+    private final Context context;
     private PlaybackStateCompat.Builder builder;
     private SimpleExoPlayer mExoPlayer;
 
-    public ExoEventListener(PlaybackStateCompat.Builder builder, SimpleExoPlayer exoPlayer) {
+    public ExoEventListener(PlaybackStateCompat.Builder builder, SimpleExoPlayer exoPlayer, Context context) {
         this.builder = builder;
         this.mExoPlayer = exoPlayer;
+        this.context = context;
     }
 
     @Override
@@ -61,7 +65,7 @@ public class ExoEventListener implements ExoPlayer.EventListener {
         } else if ((playbackState == ExoPlayer.STATE_READY)) {
             builder.setState(PlaybackStateCompat.STATE_PAUSED, mExoPlayer.getCurrentPosition(), 1f);
         }
-        MainActivity.getMediaSession().setPlaybackState(builder.build());
+        ((Playable) context).getMediaSession().setPlaybackState(builder.build());
     }
 
     @Override
