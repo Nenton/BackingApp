@@ -2,11 +2,13 @@ package com.nenton.backingapp.data.storage.realm;
 
 import com.nenton.backingapp.data.network.res.RecipeResponse;
 
+import java.io.Serializable;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class RecipeRealm extends RealmObject {
+public class RecipeRealm extends RealmObject implements Serializable {
     @PrimaryKey
     private int id;
     private String name;

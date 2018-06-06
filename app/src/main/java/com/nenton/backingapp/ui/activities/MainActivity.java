@@ -64,47 +64,57 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
             mRecipeId = state.getInt(ID_RECIPE_KEY, -1);
             mStepId = state.getInt(ID_STEP_KEY, -1);
             mStateFragment = state.getInt(STATE_FRAGMENT_KEY, STATE_FRAGMENT_RECIPE);
+            updateFragments(false);
         } else {
             mRecipeId = -1;
             mStepId = -1;
             mStateFragment = STATE_FRAGMENT_RECIPE;
+            updateFragments(true);
         }
-        updateFragments();
     }
 
-    private void updateFragments() {
+    private void updateFragments(boolean isStart) {
+
         executeNetQuery();
         switch (mStateFragment) {
             case STATE_FRAGMENT_INGREDIENTS:
-                IngredientsFragment ingredientsFragment = new IngredientsFragment();
-                mRealmManager.getRecipeById(mRecipeId, ingredientsFragment::setIngredients);
-                if (findViewById(R.id.second_container) == null) {
-                    manager.beginTransaction().replace(R.id.head_container, ingredientsFragment).commit();
-                } else {
-                    manager.beginTransaction().replace(R.id.second_container, ingredientsFragment).commit();
+                if (isStart) {
+                    IngredientsFragment ingredientsFragment = new IngredientsFragment();
+                    mRealmManager.getRecipeById(mRecipeId, ingredientsFragment::setIngredients);
+                    if (findViewById(R.id.second_container) == null) {
+                        manager.beginTransaction().replace(R.id.head_container, ingredientsFragment).commit();
+                    } else {
+                        manager.beginTransaction().replace(R.id.second_container, ingredientsFragment).commit();
+                    }
                 }
                 updateBackArrow(true);
                 break;
             case STATE_FRAGMENT_STEP:
-//                StepFragment stepFragment = new StepFragment();
-//                mRealmManager.getStepById(mStepId, stepFragment::setStep);
-//                if (findViewById(R.id.second_container) == null) {
-//                    manager.beginTransaction().replace(R.id.head_container, stepFragment).commit();
-//                } else {
-//                    manager.beginTransaction().replace(R.id.second_container, stepFragment).commit();
-//                }
+                if (isStart) {
+                    StepFragment stepFragment = new StepFragment();
+                    mRealmManager.getStepById(mStepId, stepFragment::setStep);
+                    if (findViewById(R.id.second_container) == null) {
+                        manager.beginTransaction().replace(R.id.head_container, stepFragment).commit();
+                    } else {
+                        manager.beginTransaction().replace(R.id.second_container, stepFragment).commit();
+                    }
+                }
                 updateBackArrow(true);
                 break;
             case STATE_FRAGMENT_DETAILS:
-                DetailsFragment detailsFragment = new DetailsFragment();
-                mRealmManager.getRecipeById(mRecipeId, detailsFragment::setDetailsAndSteps);
-                manager.beginTransaction().replace(R.id.head_container, detailsFragment).commit();
+                if (isStart) {
+                    DetailsFragment detailsFragment = new DetailsFragment();
+                    mRealmManager.getRecipeById(mRecipeId, detailsFragment::setDetailsAndSteps);
+                    manager.beginTransaction().replace(R.id.head_container, detailsFragment).commit();
+                }
                 updateBackArrow(true);
                 break;
             case STATE_FRAGMENT_RECIPE:
+                if (isStart) {
+                    MasterRecipesFragment fragment = new MasterRecipesFragment();
+                    updateRecipes(fragment);
+                }
                 updateBackArrow(false);
-                MasterRecipesFragment fragment = new MasterRecipesFragment();
-                updateRecipes(fragment);
                 break;
             default:
                 showMessage("Неизвестная ошибка. Попробуйте позже");
@@ -251,13 +261,13 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
     }
 
     private void updateRecipes(MasterRecipesFragment recipesFragment) {
-        manager.beginTransaction().replace(R.id.head_container, recipesFragment).commit();
         mRealmManager.getRecipes(recipeRealms -> {
             mRecipes = recipeRealms;
             if (recipesFragment != null) {
                 recipesFragment.setRecipes(mRecipes);
             }
         });
+        manager.beginTransaction().replace(R.id.head_container, recipesFragment).commit();
     }
 
     private void updateBackArrow(boolean show) {

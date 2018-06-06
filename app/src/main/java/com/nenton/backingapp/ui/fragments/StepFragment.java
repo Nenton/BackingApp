@@ -71,11 +71,7 @@ public class StepFragment extends Fragment {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
-            mStep = ((StepRealm) savedInstanceState.getSerializable(STEP_KEY));
-            mPosition = savedInstanceState.getLong(POSITION_PLAYER_KEY);
-        }
-        updateView();
+
     }
 
     @Override
@@ -111,13 +107,24 @@ public class StepFragment extends Fragment {
         description = view.findViewById(R.id.desc_step_tv);
         mExoPlayerView = view.findViewById(R.id.player_exo);
         mExoPlayerView.setPlayer(mExoPlayer);
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(STEP_KEY)) {
+                mStep = ((StepRealm) savedInstanceState.getSerializable(STEP_KEY));
+            }
+            if (savedInstanceState.containsKey(POSITION_PLAYER_KEY)) {
+                mPosition = savedInstanceState.getLong(POSITION_PLAYER_KEY);
+            }
+        }
+        updateView();
         return view;
         // TODO: 02.06.2018 FullScreen
     }
 
     @Override
     public void onPause() {
-        mExoPlayer.setPlayWhenReady(false);
+        if (mExoPlayer != null) {
+            mExoPlayer.setPlayWhenReady(false);
+        }
         super.onPause();
     }
 

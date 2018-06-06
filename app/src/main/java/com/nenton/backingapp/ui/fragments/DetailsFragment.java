@@ -22,13 +22,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DetailsFragment extends Fragment {
-    private DetailsAdapter mAdapter;
+    public static final String RECIPE_KEY = "RECIPE_KEY";
+    private DetailsAdapter mAdapter = new DetailsAdapter();
+    private RecipeRealm mRecipeRealm;
 
     public DetailsFragment() {
-        mAdapter = new DetailsAdapter();
     }
 
     public void setDetailsAndSteps(RecipeRealm recipeRealm) {
+        mRecipeRealm = recipeRealm;
+        mAdapter.swapAdapter(transferRecipeToList(mRecipeRealm));
+    }
+
+    private List<DetailDto> transferRecipeToList(RecipeRealm recipeRealm) {
         List<DetailDto> details = new ArrayList<>();
         String textIngredients = "Ingredients on " + recipeRealm.getServings() + " portions";
         details.add(new DetailDto.Builder()
@@ -43,7 +49,13 @@ public class DetailsFragment extends Fragment {
             details.add(builder.build());
             i++;
         }
-        mAdapter.swapAdapter(details);
+        return details;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putSerializable(RECIPE_KEY, mRecipeRealm);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -69,6 +81,13 @@ public class DetailsFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.details_rv);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(mManager);
+        if (savedInstanceState != null && savedInstanceState.containsKey(RECIPE_KEY)) {
+            mRecipeRealm = ((RecipeRealm) savedInstanceState.getSerializable(RECIPE_KEY));
+        }
+
+        if (mRecipeRealm != null) {
+            mAdapter.swapAdapter(transferRecipeToList(mRecipeRealm));
+        }
         return view;
     }
 
