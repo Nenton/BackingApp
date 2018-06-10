@@ -48,6 +48,12 @@ public class RealmManager {
         return results;
     }
 
+    public RealmResults<RecipeRealm> getRecipes() {
+        return getRealmInstance()
+                .where(RecipeRealm.class)
+                .findAllAsync();
+    }
+
     public RealmResults<StepRealm> getSteps() {
         return getRealmInstance()
                 .where(StepRealm.class)

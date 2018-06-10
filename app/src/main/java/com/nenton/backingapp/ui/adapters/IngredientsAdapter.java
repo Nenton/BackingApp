@@ -8,17 +8,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nenton.backingapp.R;
+import com.nenton.backingapp.data.storage.dto.IngredientDto;
 import com.nenton.backingapp.data.storage.realm.IngredientRealm;
+
+import java.util.List;
 
 import io.realm.RealmList;
 
 public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.ViewHolder> {
-    private RealmList<IngredientRealm> mIngredients;
+    private List<IngredientDto> mIngredients;
 
     public IngredientsAdapter() {
     }
 
-    public void swapAdapter(RealmList<IngredientRealm> ingredients) {
+    public void swapAdapter(List<IngredientDto> ingredients) {
         this.mIngredients = ingredients;
         notifyDataSetChanged();
     }
@@ -32,7 +35,7 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        IngredientRealm ingredient = mIngredients.get(position);
+        IngredientDto ingredient = mIngredients.get(position);
         if (ingredient != null) {
             String text = ingredient.getIngredient() + " "
                     + ingredient.getQuantity() + " "

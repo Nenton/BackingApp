@@ -1,8 +1,11 @@
 package com.nenton.backingapp.data.storage.dto;
 
 import com.nenton.backingapp.data.network.res.RecipeResponse;
+import com.nenton.backingapp.data.storage.realm.StepRealm;
 
-public class StepDto {
+import java.io.Serializable;
+
+public class StepDto implements Serializable {
     private int id;
     private String shortDescription;
     private String description;
@@ -23,6 +26,14 @@ public class StepDto {
         this.description = description;
         this.videoURL = videoURL;
         this.thumbnailURL = thumbnailURL;
+    }
+
+    public StepDto(StepRealm step) {
+        this.id = step.getId();
+        this.shortDescription = step.getShortDescription();
+        this.description = step.getDescription();
+        this.videoURL = step.getVideoURL();
+        this.thumbnailURL = step.getThumbnailURL();
     }
 
     public int getId() {

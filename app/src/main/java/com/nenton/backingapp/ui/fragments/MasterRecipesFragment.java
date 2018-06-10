@@ -2,7 +2,6 @@ package com.nenton.backingapp.ui.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,24 +12,23 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nenton.backingapp.R;
+import com.nenton.backingapp.data.storage.dto.RecipeDto;
 import com.nenton.backingapp.data.storage.realm.RecipeRealm;
 import com.nenton.backingapp.ui.adapters.MasterRecipesAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.RealmList;
-
 public class MasterRecipesFragment extends Fragment {
     private static final String RECIPES_KEY = "RECIPES_KEY";
-    private List<RecipeRealm> mRecipes;
+    private List<RecipeDto> mRecipes;
     private MasterRecipesAdapter mAdapter = new MasterRecipesAdapter();
 
 
     public MasterRecipesFragment() {
     }
 
-    public void setRecipes(List<RecipeRealm> recipes) {
+    public void setRecipes(List<RecipeDto> recipes) {
         this.mRecipes = recipes;
         mAdapter.swapAdapter(mRecipes);
     }
@@ -64,7 +62,7 @@ public class MasterRecipesFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(mManager);
         if (savedInstanceState != null && savedInstanceState.containsKey(RECIPES_KEY)) {
-            mRecipes = (ArrayList<RecipeRealm>) savedInstanceState.getSerializable(RECIPES_KEY);
+            mRecipes = (ArrayList<RecipeDto>) savedInstanceState.getSerializable(RECIPES_KEY);
         }
 
         if (mRecipes != null){

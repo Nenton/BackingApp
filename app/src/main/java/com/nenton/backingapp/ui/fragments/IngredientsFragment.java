@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nenton.backingapp.R;
+import com.nenton.backingapp.data.storage.dto.RecipeDto;
 import com.nenton.backingapp.data.storage.realm.RecipeRealm;
 import com.nenton.backingapp.ui.adapters.IngredientsAdapter;
 
@@ -20,12 +21,12 @@ import java.util.ArrayList;
 public class IngredientsFragment extends Fragment {
     public static final String INGREDIENTS_KEY = "INGREDIENTS_KEY";
     private IngredientsAdapter mAdapter = new IngredientsAdapter();
-    private RecipeRealm mRecipeRealm;
+    private RecipeDto mRecipeRealm;
 
     public IngredientsFragment() {
     }
 
-    public void setIngredients(RecipeRealm recipeRealm) {
+    public void setIngredients(RecipeDto recipeRealm) {
         this.mRecipeRealm = recipeRealm;
         mAdapter.swapAdapter(mRecipeRealm.getIngredients());
     }
@@ -45,7 +46,7 @@ public class IngredientsFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(mManager);
         if (savedInstanceState != null && savedInstanceState.containsKey(INGREDIENTS_KEY)) {
-            mRecipeRealm = (RecipeRealm) savedInstanceState.getSerializable(INGREDIENTS_KEY);
+            mRecipeRealm = (RecipeDto) savedInstanceState.getSerializable(INGREDIENTS_KEY);
         }
         if (mRecipeRealm != null){
             mAdapter.swapAdapter(mRecipeRealm.getIngredients());

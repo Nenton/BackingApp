@@ -24,6 +24,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.nenton.backingapp.R;
+import com.nenton.backingapp.data.storage.dto.StepDto;
 import com.nenton.backingapp.data.storage.realm.StepRealm;
 import com.nenton.backingapp.utils.ExoEventListener;
 import com.nenton.backingapp.utils.Playable;
@@ -31,7 +32,7 @@ import com.nenton.backingapp.utils.Playable;
 public class StepFragment extends Fragment {
     public static final String STEP_KEY = "STEP_KEY";
     public static final String POSITION_PLAYER_KEY = "POSITION_PLAYER_KEY";
-    private StepRealm mStep;
+    private StepDto mStep;
     private SimpleExoPlayerView mExoPlayerView;
     private TextView description;
     private SimpleExoPlayer mExoPlayer;
@@ -57,7 +58,7 @@ public class StepFragment extends Fragment {
         }
     }
 
-    public void setStep(StepRealm step) {
+    public void setStep(StepDto step) {
         this.mStep = step;
         updateView();
     }
@@ -114,7 +115,7 @@ public class StepFragment extends Fragment {
         mExoPlayerView.setPlayer(mExoPlayer);
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(STEP_KEY)) {
-                mStep = ((StepRealm) savedInstanceState.getSerializable(STEP_KEY));
+                mStep = ((StepDto) savedInstanceState.getSerializable(STEP_KEY));
             }
             if (savedInstanceState.containsKey(POSITION_PLAYER_KEY)) {
                 mPosition = savedInstanceState.getLong(POSITION_PLAYER_KEY);

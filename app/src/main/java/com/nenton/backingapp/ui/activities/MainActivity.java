@@ -17,7 +17,10 @@ import com.nenton.backingapp.data.network.RestService;
 import com.nenton.backingapp.data.network.ServiceGenerator;
 import com.nenton.backingapp.data.network.res.RecipeResponse;
 import com.nenton.backingapp.data.storage.dto.DetailDto;
+import com.nenton.backingapp.data.storage.dto.RecipeDto;
+import com.nenton.backingapp.data.storage.dto.StepDto;
 import com.nenton.backingapp.data.storage.realm.RecipeRealm;
+import com.nenton.backingapp.data.storage.realm.StepRealm;
 import com.nenton.backingapp.ui.fragments.DetailsFragment;
 import com.nenton.backingapp.ui.fragments.DetailsFragment.OnDetailOrStepClickListener;
 import com.nenton.backingapp.ui.fragments.IngredientsFragment;
@@ -26,10 +29,12 @@ import com.nenton.backingapp.ui.fragments.MasterRecipesFragment.OnRecipeClickLis
 import com.nenton.backingapp.ui.fragments.StepFragment;
 import com.nenton.backingapp.utils.Playable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -80,7 +85,12 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
             case STATE_FRAGMENT_INGREDIENTS:
                 if (isStart) {
                     IngredientsFragment ingredientsFragment = new IngredientsFragment();
-                    mRealmManager.getRecipeById(mRecipeId, ingredientsFragment::setIngredients);
+                    mRealmManager.getRecipeById(mRecipeId, new RealmChangeListener<RecipeRealm>() {
+                        @Override
+                        public void onChange(RecipeRealm recipeRealm) {
+                            ingredientsFragment.setIngredients(new RecipeDto(recipeRealm));
+                        }
+                    });
                     if (findViewById(R.id.second_container) == null) {
                         manager.beginTransaction().replace(R.id.head_container, ingredientsFragment).commit();
                     } else {
@@ -92,7 +102,12 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
             case STATE_FRAGMENT_STEP:
                 if (isStart) {
                     StepFragment stepFragment = new StepFragment();
-                    mRealmManager.getStepById(mStepId, stepFragment::setStep);
+                    mRealmManager.getStepById(mStepId, new RealmChangeListener<StepRealm>() {
+                        @Override
+                        public void onChange(StepRealm stepRealm) {
+                            stepFragment.setStep(new StepDto(stepRealm));
+                        }
+                    });
                     if (findViewById(R.id.second_container) == null) {
                         manager.beginTransaction().replace(R.id.head_container, stepFragment).commit();
                     } else {
@@ -104,7 +119,12 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
             case STATE_FRAGMENT_DETAILS:
                 if (isStart) {
                     DetailsFragment detailsFragment = new DetailsFragment();
-                    mRealmManager.getRecipeById(mRecipeId, detailsFragment::setDetailsAndSteps);
+                    mRealmManager.getRecipeById(mRecipeId, new RealmChangeListener<RecipeRealm>() {
+                        @Override
+                        public void onChange(RecipeRealm recipeRealm) {
+                            detailsFragment.setDetailsAndSteps(new RecipeDto(recipeRealm));
+                        }
+                    });
                     manager.beginTransaction().replace(R.id.head_container, detailsFragment).commit();
                 }
                 updateBackArrow(true);
@@ -193,7 +213,12 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
         mStateFragment = STATE_FRAGMENT_DETAILS;
         updateBackArrow(true);
         DetailsFragment detailsFragment = new DetailsFragment();
-        mRealmManager.getRecipeById(mRecipeId, detailsFragment::setDetailsAndSteps);
+        mRealmManager.getRecipeById(mRecipeId, new RealmChangeListener<RecipeRealm>() {
+            @Override
+            public void onChange(RecipeRealm recipeRealm) {
+                detailsFragment.setDetailsAndSteps(new RecipeDto(recipeRealm));
+            }
+        });
         manager.beginTransaction().replace(R.id.head_container, detailsFragment).commit();
     }
 
@@ -206,14 +231,18 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                 mStateFragment = STATE_FRAGMENT_STEP;
                 mStepId = stepId;
                 fragment = new StepFragment();
-                mRealmManager.getStepById(mStepId, ((StepFragment) fragment)::setStep);
+                Fragment finalFragment1 = fragment;
+                mRealmManager.getStepById(mStepId, stepRealm -> ((StepFragment) finalFragment1)
+                        .setStep(new StepDto(stepRealm)));
                 break;
             case INGREDIENTS:
                 mStateFragment = STATE_FRAGMENT_INGREDIENTS;
                 mStepId = -1;
                 fragment = new IngredientsFragment();
-                mRealmManager.getRecipeById(mRecipeId,
-                        ((IngredientsFragment) fragment)::setIngredients);
+                Fragment finalFragment = fragment;
+                mRealmManager.getRecipeById(mRecipeId, recipeRealm ->
+                        ((IngredientsFragment) finalFragment)
+                                .setIngredients(new RecipeDto(recipeRealm)));
                 break;
         }
 
@@ -239,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                 mStepId = -1;
                 if (findViewById(R.id.second_container) == null) {
                     DetailsFragment detailsFragment = new DetailsFragment();
-                    mRealmManager.getRecipeById(mRecipeId, detailsFragment::setDetailsAndSteps);
+                    mRealmManager.getRecipeById(mRecipeId, recipeRealm -> detailsFragment.setDetailsAndSteps(new RecipeDto(recipeRealm)));
                     manager.beginTransaction().replace(R.id.head_container, detailsFragment).commit();
                 } else {
                     manager.beginTransaction().replace(R.id.second_container, null).commit();
@@ -264,7 +293,11 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
         mRealmManager.getRecipes(recipeRealms -> {
             mRecipes = recipeRealms;
             if (recipesFragment != null) {
-                recipesFragment.setRecipes(mRecipes);
+                List<RecipeDto> recipeDtos = new ArrayList<>();
+                for (RecipeRealm recipeRealm : recipeRealms) {
+                    recipeDtos.add(new RecipeDto(recipeRealm));
+                }
+                recipesFragment.setRecipes(recipeDtos);
             }
         });
         manager.beginTransaction().replace(R.id.head_container, recipesFragment).commit();

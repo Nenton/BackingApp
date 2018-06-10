@@ -11,7 +11,6 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.nenton.backingapp.ui.activities.MainActivity;
 
 public class ExoEventListener extends Player.DefaultEventListener {
     private final Context context;

@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import com.nenton.backingapp.R;
 import com.nenton.backingapp.data.storage.dto.DetailDto;
 import com.nenton.backingapp.data.storage.dto.DetailDto.DetailType;
+import com.nenton.backingapp.data.storage.dto.RecipeDto;
+import com.nenton.backingapp.data.storage.dto.StepDto;
 import com.nenton.backingapp.data.storage.realm.RecipeRealm;
 import com.nenton.backingapp.data.storage.realm.StepRealm;
 import com.nenton.backingapp.ui.adapters.DetailsAdapter;
@@ -24,24 +26,24 @@ import java.util.List;
 public class DetailsFragment extends Fragment {
     public static final String RECIPE_KEY = "RECIPE_KEY";
     private DetailsAdapter mAdapter = new DetailsAdapter();
-    private RecipeRealm mRecipeRealm;
+    private RecipeDto mRecipeRealm;
 
     public DetailsFragment() {
     }
 
-    public void setDetailsAndSteps(RecipeRealm recipeRealm) {
+    public void setDetailsAndSteps(RecipeDto recipeRealm) {
         mRecipeRealm = recipeRealm;
         mAdapter.swapAdapter(transferRecipeToList(mRecipeRealm));
     }
 
-    private List<DetailDto> transferRecipeToList(RecipeRealm recipeRealm) {
+    private List<DetailDto> transferRecipeToList(RecipeDto recipeRealm) {
         List<DetailDto> details = new ArrayList<>();
         String textIngredients = "Ingredients on " + recipeRealm.getServings() + " portions";
         details.add(new DetailDto.Builder()
                 .setType(DetailType.INGREDIENTS)
                 .setText(textIngredients).build());
         int i = 1;
-        for (StepRealm step : recipeRealm.getSteps()) {
+        for (StepDto step : recipeRealm.getSteps()) {
             DetailDto.Builder builder = new DetailDto.Builder();
             builder.setId(step.getId())
                     .setText("Step " + i + ": " + step.getShortDescription())
@@ -83,7 +85,7 @@ public class DetailsFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(mManager);
         if (savedInstanceState != null && savedInstanceState.containsKey(RECIPE_KEY)) {
-            mRecipeRealm = ((RecipeRealm) savedInstanceState.getSerializable(RECIPE_KEY));
+            mRecipeRealm = ((RecipeDto) savedInstanceState.getSerializable(RECIPE_KEY));
         }
 
         if (mRecipeRealm != null) {

@@ -1,6 +1,8 @@
 package com.nenton.backingapp.data.storage.dto;
 
-public class DetailDto {
+import java.io.Serializable;
+
+public class DetailDto implements Serializable {
     private int id;
     private DetailType type;
     private String text;
