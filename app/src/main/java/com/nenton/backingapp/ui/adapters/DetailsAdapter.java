@@ -43,7 +43,8 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.ViewHold
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.itemView.setOnClickListener(view -> mListener.onDetailOrStepSelected(
                 mDetails.get(holder.getAdapterPosition()).getType(),
-                mDetails.get(holder.getAdapterPosition()).getId()));
+                mDetails.get(holder.getAdapterPosition()).getId(),
+                mDetails.get(holder.getAdapterPosition()).isVideo()));
         holder.mTextView.setText(mDetails.get(position).getText());
         if (mDetails.get(position).isVideo()){
             holder.mImageView.setVisibility(View.VISIBLE);

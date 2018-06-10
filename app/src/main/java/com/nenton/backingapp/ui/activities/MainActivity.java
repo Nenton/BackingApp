@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
     }
 
     @Override
-    public void onDetailOrStepSelected(DetailDto.DetailType type, int stepId) {
+    public void onDetailOrStepSelected(DetailDto.DetailType type, int stepId, boolean haveVideo) {
         updateBackArrow(true);
         Fragment fragment = null;
         switch (type) {
@@ -231,6 +231,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                 mStateFragment = STATE_FRAGMENT_STEP;
                 mStepId = stepId;
                 fragment = new StepFragment();
+                ((StepFragment) fragment).setHaveVideo(haveVideo);
                 Fragment finalFragment1 = fragment;
                 mRealmManager.getStepById(mStepId, stepRealm -> ((StepFragment) finalFragment1)
                         .setStep(new StepDto(stepRealm)));
@@ -271,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                     mRealmManager.getRecipeById(mRecipeId, recipeRealm -> detailsFragment.setDetailsAndSteps(new RecipeDto(recipeRealm)));
                     manager.beginTransaction().replace(R.id.head_container, detailsFragment).commit();
                 } else {
-                    manager.beginTransaction().replace(R.id.second_container, null).commit();
+                    manager.beginTransaction().replace(R.id.second_container, new Fragment()).commit();
                 }
                 updateBackArrow(true);
                 break;

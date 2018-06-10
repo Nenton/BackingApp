@@ -95,6 +95,6 @@ public class DetailsFragment extends Fragment {
     }
 
     public interface OnDetailOrStepClickListener {
-        void onDetailOrStepSelected(DetailDto.DetailType type, int stepId);
+        void onDetailOrStepSelected(DetailDto.DetailType type, int stepId, boolean haveVideo);
     }
 }

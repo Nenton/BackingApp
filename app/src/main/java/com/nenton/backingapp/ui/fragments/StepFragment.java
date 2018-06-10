@@ -39,6 +39,7 @@ public class StepFragment extends Fragment {
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private long mPosition = 0;
+    private boolean haveVideo = false;
 
     public StepFragment() {
     }
@@ -49,6 +50,10 @@ public class StepFragment extends Fragment {
             mExoPlayer.release();
             mExoPlayer = null;
         }
+    }
+
+    public void setHaveVideo(boolean is) {
+        haveVideo = is;
     }
 
     private void initPlayer(Context context) {
@@ -96,8 +101,11 @@ public class StepFragment extends Fragment {
             MediaSource mediaSource = new ExtractorMediaSource.Factory(factory).createMediaSource(Uri.parse(mStep.getVideoURL()));
             mExoPlayer.seekTo(mPosition);
             mExoPlayer.prepare(mediaSource);
-        } else {
-            if (mExoPlayerView != null){
+        }
+        if (mExoPlayerView != null && mStep != null) {
+            if (haveVideo && !mStep.getVideoURL().isEmpty()) {
+                mExoPlayerView.setVisibility(View.VISIBLE);
+            } else {
                 mExoPlayerView.setVisibility(View.GONE);
             }
         }
