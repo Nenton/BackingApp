@@ -50,6 +50,10 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
     private static final int STATE_FRAGMENT_DETAILS = 151;
     private static final int STATE_FRAGMENT_STEP = 251;
     private static final int STATE_FRAGMENT_INGREDIENTS = 351;
+    public static final String TAG_FRAGMENT_RECIPE = "TAG_FRAGMENT_RECIPE";
+    public static final String TAG_FRAGMENT_STEP = "TAG_FRAGMENT_STEP";
+    public static final String TAG_FRAGMENT_INGREDIENTS = "TAG_FRAGMENT_INGREDIENTS";
+    public static final String TAG_FRAGMENT_DETAILS = "TAG_FRAGMENT_DETAILS";
     private int mRecipeId;
     private int mStepId;
     private int mStateFragment;
@@ -92,9 +96,9 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                         }
                     });
                     if (findViewById(R.id.second_container) == null) {
-                        manager.beginTransaction().replace(R.id.head_container, ingredientsFragment).commit();
+                        manager.beginTransaction().replace(R.id.head_container, ingredientsFragment, TAG_FRAGMENT_INGREDIENTS).commit();
                     } else {
-                        manager.beginTransaction().replace(R.id.second_container, ingredientsFragment).commit();
+                        manager.beginTransaction().replace(R.id.second_container, ingredientsFragment, TAG_FRAGMENT_INGREDIENTS).commit();
                     }
                 }
                 updateBackArrow(true);
@@ -109,9 +113,9 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                         }
                     });
                     if (findViewById(R.id.second_container) == null) {
-                        manager.beginTransaction().replace(R.id.head_container, stepFragment).commit();
+                        manager.beginTransaction().replace(R.id.head_container, stepFragment, TAG_FRAGMENT_STEP).commit();
                     } else {
-                        manager.beginTransaction().replace(R.id.second_container, stepFragment).commit();
+                        manager.beginTransaction().replace(R.id.second_container, stepFragment, TAG_FRAGMENT_STEP).commit();
                     }
                 }
                 updateBackArrow(true);
@@ -125,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                             detailsFragment.setDetailsAndSteps(new RecipeDto(recipeRealm));
                         }
                     });
-                    manager.beginTransaction().replace(R.id.head_container, detailsFragment).commit();
+                    manager.beginTransaction().replace(R.id.head_container, detailsFragment, TAG_FRAGMENT_DETAILS).commit();
                 }
                 updateBackArrow(true);
                 break;
@@ -219,13 +223,14 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                 detailsFragment.setDetailsAndSteps(new RecipeDto(recipeRealm));
             }
         });
-        manager.beginTransaction().replace(R.id.head_container, detailsFragment).commit();
+        manager.beginTransaction().replace(R.id.head_container, detailsFragment, TAG_FRAGMENT_DETAILS).commit();
     }
 
     @Override
     public void onDetailOrStepSelected(DetailDto.DetailType type, int stepId, boolean haveVideo) {
         updateBackArrow(true);
         Fragment fragment = null;
+        String tag = null;
         switch (type) {
             case STEP:
                 mStateFragment = STATE_FRAGMENT_STEP;
@@ -235,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                 Fragment finalFragment1 = fragment;
                 mRealmManager.getStepById(mStepId, stepRealm -> ((StepFragment) finalFragment1)
                         .setStep(new StepDto(stepRealm)));
+                tag = TAG_FRAGMENT_STEP;
                 break;
             case INGREDIENTS:
                 mStateFragment = STATE_FRAGMENT_INGREDIENTS;
@@ -244,13 +250,14 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                 mRealmManager.getRecipeById(mRecipeId, recipeRealm ->
                         ((IngredientsFragment) finalFragment)
                                 .setIngredients(new RecipeDto(recipeRealm)));
+                tag = TAG_FRAGMENT_INGREDIENTS;
                 break;
         }
 
         if (findViewById(R.id.second_container) == null) {
-            manager.beginTransaction().replace(R.id.head_container, fragment).commit();
+            manager.beginTransaction().replace(R.id.head_container, fragment, tag).commit();
         } else {
-            manager.beginTransaction().replace(R.id.second_container, fragment).commit();
+            manager.beginTransaction().replace(R.id.second_container, fragment, tag).commit();
         }
 
     }
@@ -270,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                 if (findViewById(R.id.second_container) == null) {
                     DetailsFragment detailsFragment = new DetailsFragment();
                     mRealmManager.getRecipeById(mRecipeId, recipeRealm -> detailsFragment.setDetailsAndSteps(new RecipeDto(recipeRealm)));
-                    manager.beginTransaction().replace(R.id.head_container, detailsFragment).commit();
+                    manager.beginTransaction().replace(R.id.head_container, detailsFragment, TAG_FRAGMENT_DETAILS).commit();
                 } else {
                     manager.beginTransaction().replace(R.id.second_container, new Fragment()).commit();
                 }
@@ -301,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                 recipesFragment.setRecipes(recipeDtos);
             }
         });
-        manager.beginTransaction().replace(R.id.head_container, recipesFragment).commit();
+        manager.beginTransaction().replace(R.id.head_container, recipesFragment, TAG_FRAGMENT_RECIPE).commit();
     }
 
     private void updateBackArrow(boolean show) {
