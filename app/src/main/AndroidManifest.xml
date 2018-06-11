@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".Widget">
+        <receiver android:name=".widget.Widget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -32,9 +32,14 @@
         </receiver>
 
         <service
-            android:name=".utils.MyService"
+            android:name=".widget.MyService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <activity android:name=".widget.IngredientsConfigureActivity">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

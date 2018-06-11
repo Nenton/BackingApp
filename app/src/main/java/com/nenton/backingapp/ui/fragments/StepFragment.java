@@ -11,9 +11,9 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -25,21 +25,22 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.nenton.backingapp.R;
 import com.nenton.backingapp.data.storage.dto.StepDto;
-import com.nenton.backingapp.data.storage.realm.StepRealm;
 import com.nenton.backingapp.utils.ExoEventListener;
 import com.nenton.backingapp.utils.Playable;
+import com.squareup.picasso.Picasso;
 
 public class StepFragment extends Fragment {
     public static final String STEP_KEY = "STEP_KEY";
     public static final String POSITION_PLAYER_KEY = "POSITION_PLAYER_KEY";
+    public static final String PLAY_KEY = "PLAY_KEY";
     private StepDto mStep;
     private SimpleExoPlayerView mExoPlayerView;
     private TextView description;
+    private ImageView imageView;
     private SimpleExoPlayer mExoPlayer;
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private long mPosition = 0;
-    private boolean haveVideo = false;
 
     public StepFragment() {
     }
@@ -52,10 +53,6 @@ public class StepFragment extends Fragment {
         }
     }
 
-    public void setHaveVideo(boolean is) {
-        haveVideo = is;
-    }
-
     private void initPlayer(Context context) {
         if (mExoPlayer == null) {
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(context, new DefaultTrackSelector());
@@ -65,13 +62,13 @@ public class StepFragment extends Fragment {
 
     public void setStep(StepDto step) {
         this.mStep = step;
-        updateView();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putSerializable(STEP_KEY, mStep);
         outState.putLong(POSITION_PLAYER_KEY, mExoPlayer.getCurrentPosition());
+        outState.putBoolean(PLAY_KEY, mExoPlayer.getPlayWhenReady());
         super.onSaveInstanceState(outState);
     }
 
@@ -103,7 +100,7 @@ public class StepFragment extends Fragment {
             mExoPlayer.prepare(mediaSource);
         }
         if (mExoPlayerView != null && mStep != null) {
-            if (haveVideo && !mStep.getVideoURL().isEmpty()) {
+            if (!mStep.getVideoURL().isEmpty()) {
                 mExoPlayerView.setVisibility(View.VISIBLE);
             } else {
                 mExoPlayerView.setVisibility(View.GONE);
@@ -111,6 +108,18 @@ public class StepFragment extends Fragment {
         }
         if (description != null && mStep != null) {
             description.setText(mStep.getDescription());
+        }
+        if (imageView != null) {
+            if (mStep != null && mStep.getThumbnailURL() != null &&
+                    !mStep.getThumbnailURL().isEmpty() &&
+                    !mStep.getThumbnailURL().contains(".mp4")) {
+                imageView.setVisibility(View.VISIBLE);
+                Picasso.get()
+                        .load(mStep.getThumbnailURL())
+                        .into(imageView);
+            } else {
+                imageView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -120,6 +129,7 @@ public class StepFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_step, container, false);
         description = view.findViewById(R.id.desc_step_tv);
         mExoPlayerView = view.findViewById(R.id.player_exo);
+        imageView = view.findViewById(R.id.step_iv);
         mExoPlayerView.setPlayer(mExoPlayer);
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(STEP_KEY)) {
@@ -127,6 +137,9 @@ public class StepFragment extends Fragment {
             }
             if (savedInstanceState.containsKey(POSITION_PLAYER_KEY)) {
                 mPosition = savedInstanceState.getLong(POSITION_PLAYER_KEY);
+            }
+            if (savedInstanceState.containsKey(PLAY_KEY)) {
+                mExoPlayer.setPlayWhenReady(savedInstanceState.getBoolean(PLAY_KEY));
             }
         }
         updateView();
@@ -136,9 +149,6 @@ public class StepFragment extends Fragment {
 
     @Override
     public void onPause() {
-        if (mExoPlayer != null) {
-            mExoPlayer.setPlayWhenReady(false);
-        }
         super.onPause();
     }
 

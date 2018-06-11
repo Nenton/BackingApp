@@ -20,7 +20,6 @@ import com.nenton.backingapp.data.storage.dto.DetailDto;
 import com.nenton.backingapp.data.storage.dto.RecipeDto;
 import com.nenton.backingapp.data.storage.dto.StepDto;
 import com.nenton.backingapp.data.storage.realm.RecipeRealm;
-import com.nenton.backingapp.data.storage.realm.StepRealm;
 import com.nenton.backingapp.ui.fragments.DetailsFragment;
 import com.nenton.backingapp.ui.fragments.DetailsFragment.OnDetailOrStepClickListener;
 import com.nenton.backingapp.ui.fragments.IngredientsFragment;
@@ -106,12 +105,8 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
             case STATE_FRAGMENT_STEP:
                 if (isStart) {
                     StepFragment stepFragment = new StepFragment();
-                    mRealmManager.getStepById(mStepId, new RealmChangeListener<StepRealm>() {
-                        @Override
-                        public void onChange(StepRealm stepRealm) {
-                            stepFragment.setStep(new StepDto(stepRealm));
-                        }
-                    });
+                    stepFragment.setStep(new StepDto(mRealmManager.getStepById(mStepId)));
+                    ;
                     if (findViewById(R.id.second_container) == null) {
                         manager.beginTransaction().replace(R.id.head_container, stepFragment, TAG_FRAGMENT_STEP).commit();
                     } else {
@@ -236,10 +231,7 @@ public class MainActivity extends AppCompatActivity implements OnRecipeClickList
                 mStateFragment = STATE_FRAGMENT_STEP;
                 mStepId = stepId;
                 fragment = new StepFragment();
-                ((StepFragment) fragment).setHaveVideo(haveVideo);
-                Fragment finalFragment1 = fragment;
-                mRealmManager.getStepById(mStepId, stepRealm -> ((StepFragment) finalFragment1)
-                        .setStep(new StepDto(stepRealm)));
+                ((StepFragment) fragment).setStep(new StepDto(mRealmManager.getStepById(mStepId)));
                 tag = TAG_FRAGMENT_STEP;
                 break;
             case INGREDIENTS:

@@ -76,13 +76,11 @@ public class RealmManager {
                 .findFirstAsync();
     }
 
-    public StepRealm getStepById(int id, RealmChangeListener<StepRealm> realmChangeListener) {
-        StepRealm stepRealm = getRealmInstance()
+    public StepRealm getStepById(int id) {
+        return getRealmInstance()
                 .where(StepRealm.class)
                 .equalTo("id", id)
-                .findFirstAsync();
-        stepRealm.addChangeListener(realmChangeListener);
-        return stepRealm;
+                .findFirst();
     }
 
 //    public int getLastIdRecipe() {
