@@ -16,12 +16,11 @@ import com.nenton.backingapp.data.storage.dto.DetailDto;
 import com.nenton.backingapp.data.storage.dto.DetailDto.DetailType;
 import com.nenton.backingapp.data.storage.dto.RecipeDto;
 import com.nenton.backingapp.data.storage.dto.StepDto;
-import com.nenton.backingapp.data.storage.realm.RecipeRealm;
-import com.nenton.backingapp.data.storage.realm.StepRealm;
 import com.nenton.backingapp.ui.adapters.DetailsAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DetailsFragment extends Fragment {
     public static final String RECIPE_KEY = "RECIPE_KEY";
@@ -66,6 +65,7 @@ public class DetailsFragment extends Fragment {
         super.onAttach(context);
         try {
             OnDetailOrStepClickListener mListener = (OnDetailOrStepClickListener) context;
+            Objects.requireNonNull(getActivity()).setTitle(mRecipeRealm.getName());
             if (mAdapter != null) {
                 mAdapter.setListener(mListener);
             }

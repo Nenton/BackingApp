@@ -13,11 +13,11 @@ import android.view.ViewGroup;
 
 import com.nenton.backingapp.R;
 import com.nenton.backingapp.data.storage.dto.RecipeDto;
-import com.nenton.backingapp.data.storage.realm.RecipeRealm;
 import com.nenton.backingapp.ui.adapters.MasterRecipesAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MasterRecipesFragment extends Fragment {
     private static final String RECIPES_KEY = "RECIPES_KEY";
@@ -44,6 +44,7 @@ public class MasterRecipesFragment extends Fragment {
         super.onAttach(context);
         try {
             OnRecipeClickListener mListener = (OnRecipeClickListener) context;
+            Objects.requireNonNull(getActivity()).setTitle("Backing App");
             if (mAdapter != null) {
                 mAdapter.setListener(mListener);
             }
